@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_list/groceryItem.dart';
 
 class AddCheckList extends StatefulWidget {
   const AddCheckList({super.key});
@@ -8,6 +9,10 @@ class AddCheckList extends StatefulWidget {
 }
 
 class _AddCheckListState extends State<AddCheckList> {
+  final TextEditingController _controller = TextEditingController();
+
+  List<Groceryitem> myList = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,54 +21,160 @@ class _AddCheckListState extends State<AddCheckList> {
         child: Container(
           width: double.infinity,
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
-          child: Form(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Text(
-                      'New Checklist',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.6,
-                      ),
-                    ),
-                    Text('Subtext for the title'),
-
-                    SizedBox(height: 30),
-
-                    TextFormField(
-                      decoration: InputDecoration(labelText: 'Budget'),
-                    ),
-                  ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Text(
+                'New Checklist',
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.6,
                 ),
-                SizedBox(height: 50),
-                Center(child: Text('Click the + to add items to the list')),
-              ],
-            ),
+              ),
+              Text('Subtext for the title'),
+
+              SizedBox(height: 30),
+
+              TextField(
+                controller: _controller,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: 'Enter your budget'),
+              ),
+
+              SizedBox(height: 50),
+
+              ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: myList.length,
+                itemBuilder: (context, index) {
+                  final item = myList[index];
+
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                    child: ListTile(
+                      title: Text(item.name),
+                      tileColor: Colors.blueGrey[100],
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await showDialog(
+        onPressed: () {
+          showDialog(
             context: context,
-            builder: (BuildContext context) {
+            builder: (context) {
+              final _formKey = GlobalKey<FormState>();
+              String _name = '';
+              double _estimatedPrice = 0.0;
+              int _quantity = 1;
+
               return AlertDialog(
                 title: const Text('Add Item'),
-                content: Column(
-                  children: <Widget>[
-                    TextField(
-                      decoration: InputDecoration(labelText: 'Item Name'),
-                    ),
-                    TextField(
-                      decoration: InputDecoration(labelText: 'Estimated Cost'),
-                    ),
-                  ],
+                content: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      TextFormField(
+                        decoration: InputDecoration(labelText: 'Item Name'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please provide a name for the item";
+                          }
+
+                          return null;
+                        },
+
+                        onSaved: (value) => _name = value!,
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Estimated Price',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please provide an estimated price for the item";
+                          }
+
+                          try {
+                            if (double.parse(value.trim()) <= 0.0) {
+                              return "Estimated price should be greater than 0";
+                            }
+                          } catch (e) {
+                            return "Only numeric values are allowed";
+                          }
+
+                          return null;
+                        },
+
+                        onSaved: (value) =>
+                            _estimatedPrice = double.parse(value!),
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(labelText: 'Quantity'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please provide quantity for the item";
+                          }
+
+                          try {
+                            if (int.parse(value.trim()) <= 0) {
+                              return "Quantity should be greater than 0";
+                            }
+                          } catch (e) {
+                            return "Only numeric values are allowed";
+                          }
+
+                          return null;
+                        },
+
+                        onSaved: (value) => _quantity = int.parse(value!),
+                      ),
+                    ],
+                  ),
                 ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+
+                        setState(() {
+                          Groceryitem list = Groceryitem(
+                            name: _name,
+                            estimatedPrice: _estimatedPrice,
+                            quantity: _quantity,
+                          );
+
+                          print(_name);
+
+                          myList.add(
+                            Groceryitem(
+                              name: _name,
+                              estimatedPrice: _estimatedPrice,
+                              quantity: _quantity,
+                            ),
+                          );
+                        });
+
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text('Save'),
+                  ),
+                ],
               );
             },
           );
