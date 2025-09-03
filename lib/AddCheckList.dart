@@ -66,13 +66,18 @@ class _AddCheckListState extends State<AddCheckList> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(item.name),
-                                Text("${item.quantity.toString()} pcs"),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(item.name),
+                                    SizedBox(width: 10),
+                                    Text("${item.quantity.toString()} pcs"),
+                                  ],
+                                ),
+                                Text("P ${item.estimatedPrice}"),
                               ],
                             ),
-                            Column(
-                              children: [Text("P ${item.estimatedPrice}")],
-                            ),
+                            Text("P ${item.estimatedPrice * item.quantity}"),
                           ],
                         ),
                       ),
@@ -87,7 +92,6 @@ class _AddCheckListState extends State<AddCheckList> {
                   Text("P ${totalEstimatedPrice.toString()}"),
                 ],
               ),
-              Row(children: [Text('Actual Price: '), Text('20,000.0')]),
             ],
           ),
         ),
@@ -180,7 +184,8 @@ class _AddCheckListState extends State<AddCheckList> {
                         _formKey.currentState!.save();
 
                         setState(() {
-                          myList.add(
+                          myList.insert(
+                            0,
                             Groceryitem(
                               name: _name,
                               estimatedPrice: _estimatedPrice,
