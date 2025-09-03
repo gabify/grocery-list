@@ -12,6 +12,7 @@ class _AddCheckListState extends State<AddCheckList> {
   final TextEditingController _controller = TextEditingController();
 
   List<Groceryitem> myList = [];
+  double totalEstimatedPrice = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -52,14 +53,41 @@ class _AddCheckListState extends State<AddCheckList> {
                   final item = myList[index];
 
                   return Container(
-                    margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                    child: ListTile(
-                      title: Text(item.name),
-                      tileColor: Colors.blueGrey[100],
+                    margin: EdgeInsets.symmetric(vertical: 3),
+                    child: Card(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 25,
+                          vertical: 15,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(item.name),
+                                Text("${item.quantity.toString()} pcs"),
+                              ],
+                            ),
+                            Column(
+                              children: [Text("P ${item.estimatedPrice}")],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
               ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Text('Estimated Price: '),
+                  Text("P ${totalEstimatedPrice.toString()}"),
+                ],
+              ),
+              Row(children: [Text('Actual Price: '), Text('20,000.0')]),
             ],
           ),
         ),
@@ -152,20 +180,18 @@ class _AddCheckListState extends State<AddCheckList> {
                         _formKey.currentState!.save();
 
                         setState(() {
-                          Groceryitem list = Groceryitem(
-                            name: _name,
-                            estimatedPrice: _estimatedPrice,
-                            quantity: _quantity,
-                          );
-
-                          print(_name);
-
                           myList.add(
                             Groceryitem(
                               name: _name,
                               estimatedPrice: _estimatedPrice,
                               quantity: _quantity,
                             ),
+                          );
+
+                          totalEstimatedPrice = myList.fold(
+                            0.0,
+                            (current, item) =>
+                                current + (item.estimatedPrice * item.quantity),
                           );
                         });
 
