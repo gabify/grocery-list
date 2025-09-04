@@ -1,3 +1,4 @@
+import 'package:grocery_list/Groceryitem.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -45,16 +46,41 @@ class Databasehelper {
   ''');
   }
 
-  Future<int> insertGroceryList(Map<String, dynamic> groceryList) async {
+  Future<int?> saveCheckList(
+    Map<String, dynamic> groceryList,
+    List<Groceryitem> groceryItems,
+  ) async {
     final db = await database;
-    return await db.insert('groceryList', groceryList);
+
+    await db.transaction((tnx) async {
+      int groceryList_id = await insertGroceryList(tnx, groceryList);
+
+      final convertedToMap = groceryItems.map((item) {
+        item.setGroceryListId = groceryList_id;
+
+        return item.toMap();
+      }).toList();
+
+      await insertGroceryItems(tnx, convertedToMap);
+
+      return groceryList_id;
+    });
+
+    return null;
+  }
+
+  Future<int> insertGroceryList(
+    Transaction tnx,
+    Map<String, dynamic> groceryList,
+  ) async {
+    return await tnx.insert('groceryList', groceryList);
   }
 
   Future<void> insertGroceryItems(
+    Transaction tnx,
     List<Map<String, dynamic>> groceryItems,
   ) async {
-    final db = await database;
-    var batch = db.batch();
+    var batch = tnx.batch();
 
     for (var groceryItem in groceryItems) {
       batch.insert('groceryItem', groceryItem);

@@ -1,7 +1,14 @@
 class Checklist {
   int? id;
   double budget;
-  String date;
+  String created_at;
 
-  Checklist({this.id, required this.budget, required this.date});
+  Checklist({this.id, required this.budget, required this.created_at});
+
+  factory Checklist.fromMap(Map<String, dynamic> checklist) {
+    return Checklist(
+      budget: checklist['budget'],
+      created_at: checklist['created-at'],
+    );
+  }
 }
