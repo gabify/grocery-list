@@ -36,9 +36,10 @@ class Databasehelper {
 
     await db.execute('''
       CREATE TABLE groceryItem (
-        id INTEGERE PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         groceryList_id INTEGER,
         itemName TEXT,
+        quantity INTEGER,
         estimatedPrice REAL,
         actualPrice REAL,
         created_at TEXT
