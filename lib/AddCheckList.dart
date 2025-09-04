@@ -10,14 +10,46 @@ class AddCheckList extends StatefulWidget {
 
 class _AddCheckListState extends State<AddCheckList> {
   final TextEditingController _controller = TextEditingController();
-
   List<Groceryitem> myList = [];
   double totalEstimatedPrice = 0.0;
+  double budget = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller.addListener(() {
+      setState(() {
+        budget = double.parse(_controller.text);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Checklist')),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              label: Text('Cancel'),
+              icon: Icon(Icons.close),
+            ),
+            TextButton.icon(
+              onPressed: () {
+                //save grocery list
+              },
+              label: Text('Save'),
+              icon: Icon(Icons.check),
+            ),
+          ],
+        ),
+        automaticallyImplyLeading: false,
+      ),
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
@@ -33,7 +65,7 @@ class _AddCheckListState extends State<AddCheckList> {
                   letterSpacing: 0.6,
                 ),
               ),
-              Text('Subtext for the title'),
+              Text('What are you going to buy today?'),
 
               SizedBox(height: 30),
 
@@ -62,6 +94,7 @@ class _AddCheckListState extends State<AddCheckList> {
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,6 +123,12 @@ class _AddCheckListState extends State<AddCheckList> {
                 children: [
                   Text('Estimated Price: '),
                   Text("P ${totalEstimatedPrice.toString()}"),
+                ],
+              ),
+              Row(
+                children: [
+                  Text('Remaining Budget: '),
+                  Text("P ${(budget - totalEstimatedPrice).toString()}"),
                 ],
               ),
             ],
@@ -213,5 +252,11 @@ class _AddCheckListState extends State<AddCheckList> {
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
