@@ -24,9 +24,19 @@ class Groceryitem {
       'id': id,
       'groceryList_id': groceryList_id,
       'itemName': name,
+      'quantity': quantity,
       'estimatedPrice': estimatedPrice,
       'actualPrice': actualPrice,
       'created_at': created_at,
     };
+  }
+
+  factory Groceryitem.fromMap(Map<String, dynamic> item) {
+    return Groceryitem(
+      id: item['id'],
+      name: item['itemName'],
+      estimatedPrice: item['estimatedPrice'],
+      quantity: item['quantity'],
+    );
   }
 }

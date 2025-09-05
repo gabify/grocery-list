@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_list/Grocerylist.dart';
 import 'package:grocery_list/Services/Databasehelper.dart';
 import 'package:grocery_list/checklist.dart';
 
@@ -14,7 +15,6 @@ class _DashboardState extends State<Dashboard> {
 
   Future<List<Checklist>> loadChecklist() async {
     final data = await Databasehelper().getGroceryLists();
-    print(data);
     return data.map((e) => Checklist.fromMap(e)).toList();
   }
 
@@ -44,6 +44,12 @@ class _DashboardState extends State<Dashboard> {
             child: ListTile(
               title: Text(list.budget.toString()),
               tileColor: Colors.blueGrey[100],
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Grocerylist(groceryListId: list.id!),
+                ),
+              ),
             ),
           );
         },

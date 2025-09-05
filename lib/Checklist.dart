@@ -7,6 +7,7 @@ class Checklist {
 
   factory Checklist.fromMap(Map<String, dynamic> checklist) {
     return Checklist(
+      id: checklist['id'],
       budget: checklist['budget'],
       created_at: checklist['created_at'],
     );
