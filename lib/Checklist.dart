@@ -8,7 +8,11 @@ class Checklist {
   factory Checklist.fromMap(Map<String, dynamic> checklist) {
     return Checklist(
       budget: checklist['budget'],
-      created_at: checklist['created-at'],
+      created_at: checklist['created_at'],
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'budget': budget, 'created_at': created_at};
   }
 }

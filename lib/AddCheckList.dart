@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_list/groceryItem.dart';
+import 'package:grocery_list/Checklist.dart';
+import 'package:grocery_list/Groceryitem.dart';
+import 'package:grocery_list/Services/Databasehelper.dart';
+import 'package:grocery_list/Services/Grocerylistprovider.dart';
 
 class AddCheckList extends StatefulWidget {
   const AddCheckList({super.key});
@@ -9,6 +12,7 @@ class AddCheckList extends StatefulWidget {
 }
 
 class _AddCheckListState extends State<AddCheckList> {
+  final provider = Grocerylistprovider();
   final TextEditingController _controller = TextEditingController();
   List<Groceryitem> myList = [];
   double totalEstimatedPrice = 0.0;
@@ -41,7 +45,44 @@ class _AddCheckListState extends State<AddCheckList> {
             ),
             TextButton.icon(
               onPressed: () {
-                //save grocery list
+                if (budget <= 0.0 || myList.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Please input a budget and grocery items'),
+                    ),
+                  );
+                } else {
+                  final groceryList = Checklist(
+                    budget: budget,
+                    created_at: 'September 05, 2024',
+                  ).toMap();
+
+                  //show loading
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Center(child: CircularProgressIndicator());
+                    },
+                  );
+
+                  Databasehelper().saveCheckList(groceryList, myList).then((
+                    result,
+                  ) {
+                    if (result == null) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'An error occured. Please try again later',
+                          ),
+                        ),
+                      );
+                    } else {
+                      Navigator.of(context).pop();
+                      Navigator.pop(context);
+                    }
+                  });
+                }
               },
               label: Text('Save'),
               icon: Icon(Icons.check),

@@ -14,7 +14,7 @@ class Databasehelper {
   Future<Database> get database async {
     if (_db != null) return _db!;
 
-    _db = await _initDB('grocery_list_db.db');
+    _db = await _initDB('grocery_list_db_1.db');
     return _db!;
   }
 
@@ -53,21 +53,23 @@ class Databasehelper {
   ) async {
     final db = await database;
 
-    await db.transaction((tnx) async {
-      int groceryList_id = await insertGroceryList(tnx, groceryList);
+    return await db.transaction((tnx) async {
+      try {
+        int groceryList_id = await insertGroceryList(tnx, groceryList);
 
-      final convertedToMap = groceryItems.map((item) {
-        item.setGroceryListId = groceryList_id;
+        final convertedToMap = groceryItems.map((item) {
+          item.setGroceryListId = groceryList_id;
 
-        return item.toMap();
-      }).toList();
+          return item.toMap();
+        }).toList();
 
-      await insertGroceryItems(tnx, convertedToMap);
+        await insertGroceryItems(tnx, convertedToMap);
 
-      return groceryList_id;
+        return groceryList_id;
+      } catch (e) {
+        return null;
+      }
     });
-
-    return null;
   }
 
   Future<int> insertGroceryList(
