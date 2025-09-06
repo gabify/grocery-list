@@ -38,7 +38,7 @@ class _AddCheckListState extends State<AddCheckList> {
           children: [
             TextButton.icon(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/');
               },
               label: Text('Cancel'),
               icon: Icon(Icons.close),
@@ -79,7 +79,7 @@ class _AddCheckListState extends State<AddCheckList> {
                       );
                     } else {
                       Navigator.of(context).pop();
-                      Navigator.pop(context);
+                      Navigator.pushReplacementNamed(context, '/');
                     }
                   });
                 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_list/Grocerylist.dart';
 import 'package:grocery_list/Services/Databasehelper.dart';
+import 'package:grocery_list/Services/Grocerylistprovider.dart';
 import 'package:grocery_list/checklist.dart';
+import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -11,33 +13,30 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  List<Checklist> myList = [];
-
-  Future<List<Checklist>> loadChecklist() async {
-    final data = await Databasehelper().getGroceryLists();
-    return data.map((e) => Checklist.fromMap(e)).toList();
+  Future<void> _initData() async {
+    await context.read<Grocerylistprovider>().loadChecklist();
   }
 
   @override
   void initState() {
-    loadChecklist().then((result) {
-      setState(() {
-        myList = result;
-      });
-    });
-
     // TODO: implement initState
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _initData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final checklists = context.watch<Grocerylistprovider>().checklists;
+
     return Scaffold(
       appBar: AppBar(title: Text('Grocery List')),
       body: ListView.builder(
-        itemCount: myList.length,
+        itemCount: checklists.length,
         itemBuilder: (context, index) {
-          final list = myList[index];
+          final list = checklists[index];
 
           return Container(
             margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
@@ -56,7 +55,7 @@ class _DashboardState extends State<Dashboard> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/addChecklist');
+          Navigator.pushReplacementNamed(context, '/addChecklist');
         },
         child: Icon(Icons.add),
       ),
