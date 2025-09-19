@@ -32,17 +32,29 @@ class _DashboardState extends State<Dashboard> {
     final checklists = context.watch<Grocerylistprovider>().checklists;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Grocery List')),
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: Text(
+          'Grocery List',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[100],
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.pink[400],
+        toolbarHeight: 70,
+      ),
       body: ListView.builder(
         itemCount: checklists.length,
         itemBuilder: (context, index) {
           final list = checklists[index];
 
           return Container(
-            margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+            margin: EdgeInsets.symmetric(vertical: 3),
             child: ListTile(
               title: Text(list.budget.toString()),
-              tileColor: Colors.blueGrey[100],
+              tileColor: Colors.white,
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
