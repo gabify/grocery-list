@@ -36,25 +36,13 @@ class _GrocerylistState extends State<Grocerylist> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('My Grocery List')),
-      body: ListView.builder(
-        itemCount: groceryItems.length,
-        itemBuilder: (context, index) {
-          final item = groceryItems[index];
+      body: Column(
+        child: ListView.builder(
+          itemCount: groceryItems.length,
+          itemBuilder: (context, index) {
+            final item = groceryItems[index];
 
-          return Dismissible(
-            key: Key(item.id.toString()),
-            direction: DismissDirection.endToStart,
-            background: Container(
-              color: Colors.lightGreen[50],
-              alignment: Alignment.centerRight,
-              child: Icon(Icons.check, color: Colors.grey[400]),
-            ),
-            onDismissed: (direction) {
-              setState(() {
-                groceryItems.removeAt(index);
-              });
-            },
-            child: Container(
+            return Container(
               margin: EdgeInsets.symmetric(vertical: 3),
               child: ListTile(
                 title: Row(
@@ -64,12 +52,28 @@ class _GrocerylistState extends State<Grocerylist> {
                     Text("${item.quantity} pcs"),
                   ],
                 ),
-                subtitle: Text("₱ ${item.estimatedPrice}"),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(" Estimated Price: ₱ ${item.estimatedPrice}"),
+                    Text(" Actual Price: ₱ ${item.actualPrice ?? 0.0}"),
+                  ],
+                ),
                 tileColor: Colors.grey[100],
+                trailing: Icon(
+                  Icons.check_circle,
+                  color: item.isBought ? Colors.green[400] : Colors.grey[100],
+                  size: 25,
+                ),
+                onTap: () {
+                  setState(() {
+                    item.isBought = !item.isBought;
+                  });
+                },
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
