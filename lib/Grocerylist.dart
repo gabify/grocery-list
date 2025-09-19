@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:grocery_list/Groceryitem.dart';
 import 'package:grocery_list/Services/Databasehelper.dart';
@@ -39,12 +41,32 @@ class _GrocerylistState extends State<Grocerylist> {
         itemBuilder: (context, index) {
           final item = groceryItems[index];
 
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-            child: ListTile(
-              title: Text(item.name),
-              subtitle: Text('P ${item.estimatedPrice}'),
-              tileColor: Colors.blueGrey[100],
+          return Dismissible(
+            key: Key(item.id.toString()),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              color: Colors.lightGreen[50],
+              alignment: Alignment.centerRight,
+              child: Icon(Icons.check, color: Colors.grey[400]),
+            ),
+            onDismissed: (direction) {
+              setState(() {
+                groceryItems.removeAt(index);
+              });
+            },
+            child: Container(
+              margin: EdgeInsets.symmetric(vertical: 3),
+              child: ListTile(
+                title: Row(
+                  children: [
+                    Text(item.name),
+                    SizedBox(width: 10),
+                    Text("${item.quantity} pcs"),
+                  ],
+                ),
+                subtitle: Text("₱ ${item.estimatedPrice}"),
+                tileColor: Colors.grey[100],
+              ),
             ),
           );
         },
