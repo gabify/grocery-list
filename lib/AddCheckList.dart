@@ -38,7 +38,7 @@ class _AddCheckListState extends State<AddCheckList> {
           children: [
             TextButton.icon(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushReplacementNamed(context, '/');
               },
               label: Text('Cancel'),
               icon: Icon(Icons.close),
@@ -79,7 +79,7 @@ class _AddCheckListState extends State<AddCheckList> {
                       );
                     } else {
                       Navigator.of(context).pop();
-                      Navigator.pop(context);
+                      Navigator.pushReplacementNamed(context, '/');
                     }
                   });
                 }
@@ -125,34 +125,51 @@ class _AddCheckListState extends State<AddCheckList> {
                 itemBuilder: (context, index) {
                   final item = myList[index];
 
-                  return Container(
-                    margin: EdgeInsets.symmetric(vertical: 3),
-                    child: Card(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 25,
-                          vertical: 15,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(item.name),
-                                    SizedBox(width: 10),
-                                    Text("${item.quantity.toString()} pcs"),
-                                  ],
-                                ),
-                                Text("P ${item.estimatedPrice}"),
-                              ],
-                            ),
-                            Text("P ${item.estimatedPrice * item.quantity}"),
-                          ],
+                  return Dismissible(
+                    key: Key(item.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red[400],
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      alignment: Alignment.centerRight,
+                      child: Icon(Icons.delete_rounded, color: Colors.grey[50]),
+                    ),
+                    onDismissed: (direction) {
+                      setState(() {
+                        totalEstimatedPrice -=
+                            (item.quantity * item.estimatedPrice);
+                        myList.removeAt(index);
+                      });
+                    },
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 3),
+                      child: Card(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25,
+                            vertical: 15,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(item.name),
+                                      SizedBox(width: 10),
+                                      Text("${item.quantity.toString()} pcs"),
+                                    ],
+                                  ),
+                                  Text("P ${item.estimatedPrice}"),
+                                ],
+                              ),
+                              Text("P ${item.estimatedPrice * item.quantity}"),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -263,24 +280,42 @@ class _AddCheckListState extends State<AddCheckList> {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
 
-                        setState(() {
-                          myList.insert(
-                            0,
-                            Groceryitem(
-                              name: _name,
-                              estimatedPrice: _estimatedPrice,
-                              quantity: _quantity,
+                        if (budget <= 0.0) {
+                          print(budget.toString());
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Please add a budget first!'),
                             ),
                           );
+                        } else {
+                          double newEstimatedPrice =
+                              totalEstimatedPrice +
+                              (_estimatedPrice * _quantity);
+                          if (newEstimatedPrice < budget) {
+                            setState(() {
+                              totalEstimatedPrice = newEstimatedPrice;
 
-                          totalEstimatedPrice = myList.fold(
-                            0.0,
-                            (current, item) =>
-                                current + (item.estimatedPrice * item.quantity),
-                          );
-                        });
+                              myList.insert(
+                                0,
+                                Groceryitem(
+                                  name: _name,
+                                  estimatedPrice: _estimatedPrice,
+                                  quantity: _quantity,
+                                ),
+                              );
+                            });
 
-                        Navigator.pop(context);
+                            Navigator.pop(context);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Sorry! Items exceed your budget.',
+                                ),
+                              ),
+                            );
+                          }
+                        }
                       }
                     },
                     child: Text('Save'),

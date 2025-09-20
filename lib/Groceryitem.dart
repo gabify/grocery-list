@@ -6,6 +6,7 @@ class Groceryitem {
   double? actualPrice;
   int quantity;
   String? created_at;
+  bool isBought;
 
   Groceryitem({
     this.id,
@@ -15,6 +16,7 @@ class Groceryitem {
     required this.name,
     required this.estimatedPrice,
     required this.quantity,
+    this.isBought = false,
   });
 
   set setGroceryListId(int id) => groceryList_id = id;

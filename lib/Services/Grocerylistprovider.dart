@@ -3,14 +3,19 @@ import 'package:grocery_list/Groceryitem.dart';
 import 'package:grocery_list/Services/Databasehelper.dart';
 import 'package:grocery_list/checklist.dart';
 
-class Grocerylistprovider {
+class Grocerylistprovider extends ChangeNotifier {
   List<Checklist> _checkLists = [];
   List<Groceryitem> _groceryItems = [];
 
   Future<void> loadChecklist() async {
     final data = await Databasehelper().getGroceryLists();
     _checkLists = data.map((e) => Checklist.fromMap(e)).toList();
+
+    notifyListeners();
   }
+
+  //Getters
+  List<Checklist> get checklists => List.unmodifiable(_checkLists);
 
   //save checklist
   Future<int> addNewCheckList(

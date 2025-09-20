@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:grocery_list/Groceryitem.dart';
 import 'package:grocery_list/Services/Databasehelper.dart';
@@ -13,6 +15,7 @@ class Grocerylist extends StatefulWidget {
 
 class _GrocerylistState extends State<Grocerylist> {
   List<Groceryitem> groceryItems = [];
+  int totalBought = 0;
 
   Future<List<Groceryitem>> loadItems() async {
     final data = await Databasehelper().getGroceryItems(widget.groceryListId);
@@ -33,21 +36,102 @@ class _GrocerylistState extends State<Grocerylist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('My Grocery List')),
-      body: ListView.builder(
-        itemCount: groceryItems.length,
-        itemBuilder: (context, index) {
-          final item = groceryItems[index];
-
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-            child: ListTile(
-              title: Text(item.name),
-              subtitle: Text('P ${item.estimatedPrice}'),
-              tileColor: Colors.blueGrey[100],
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('My Grocery List'),
+            TextButton.icon(
+              onPressed: () {},
+              label: Text("Mark as done"),
+              icon: Icon(Icons.check),
             ),
-          );
-        },
+          ],
+        ),
+      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsetsGeometry.symmetric(
+                vertical: 20,
+                horizontal: 20,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 50,
+                      ),
+                      child: Column(
+                        children: [
+                          Text("Total"),
+                          Text("${groceryItems.length}"),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 50,
+                      ),
+                      child: Column(
+                        children: [
+                          Text("Bought"),
+                          Text(totalBought.toString()),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final item = groceryItems[index];
+
+              return Container(
+                margin: EdgeInsets.symmetric(vertical: 3),
+                child: ListTile(
+                  title: Row(
+                    children: [
+                      Text(item.name),
+                      SizedBox(width: 10),
+                      Text("${item.quantity} pcs"),
+                    ],
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(" Estimated Price: ₱ ${item.estimatedPrice}"),
+                      Text(" Actual Price: ₱ ${item.actualPrice ?? 0.0}"),
+                    ],
+                  ),
+                  tileColor: Colors.grey[100],
+                  trailing: Icon(
+                    Icons.check_circle,
+                    color: item.isBought ? Colors.green[400] : Colors.grey[100],
+                    size: 25,
+                  ),
+                  onTap: () {
+                    setState(() {
+                      item.isBought = !item.isBought;
+                      totalBought = groceryItems
+                          .where((i) => i.isBought)
+                          .length;
+                    });
+                  },
+                ),
+              );
+            }, childCount: groceryItems.length),
+          ),
+        ],
       ),
     );
   }
