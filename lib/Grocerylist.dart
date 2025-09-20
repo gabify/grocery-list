@@ -15,6 +15,7 @@ class Grocerylist extends StatefulWidget {
 
 class _GrocerylistState extends State<Grocerylist> {
   List<Groceryitem> groceryItems = [];
+  int totalBought = 0;
 
   Future<List<Groceryitem>> loadItems() async {
     final data = await Databasehelper().getGroceryItems(widget.groceryListId);
@@ -34,10 +35,20 @@ class _GrocerylistState extends State<Grocerylist> {
 
   @override
   Widget build(BuildContext context) {
-    int totalBought = 0;
-
     return Scaffold(
-      appBar: AppBar(title: Text('My Grocery List')),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('My Grocery List'),
+            TextButton.icon(
+              onPressed: () {},
+              label: Text("Mark as done"),
+              icon: Icon(Icons.check),
+            ),
+          ],
+        ),
+      ),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -111,8 +122,9 @@ class _GrocerylistState extends State<Grocerylist> {
                   onTap: () {
                     setState(() {
                       item.isBought = !item.isBought;
-                      item.isBought ? totalBought += 1 : totalBought -= 1;
-                      // totalBought not showing
+                      totalBought = groceryItems
+                          .where((i) => i.isBought)
+                          .length;
                     });
                   },
                 ),
