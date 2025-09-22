@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_list/Checklist/ChecklistScreen.dart';
 import 'package:grocery_list/Product/ProductScreen.dart';
+import 'package:grocery_list/Services/ProductProvider.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,7 +14,21 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _selectedScreen = 0;
 
+  Future<void> initData() async {
+    await context.read<ProductProvider>().loadProducts();
+  }
+
   final List<Widget> _screens = [ChecklistScreen(), ProductScreen()];
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await initData();
+    });
+
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +55,18 @@ class _HomeState extends State<Home> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          switch (_selectedScreen) {
+            case 0:
+              Navigator.pushReplacementNamed(context, '/addChecklist');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/addProduct');
+              break;
+            default:
+              Navigator.pushReplacementNamed(context, '/');
+          }
+        },
         shape: CircleBorder(),
         child: Icon(Icons.add),
       ),

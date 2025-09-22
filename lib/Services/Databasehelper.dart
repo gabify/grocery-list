@@ -1,4 +1,5 @@
 import 'package:grocery_list/Services/Item.dart';
+import 'package:grocery_list/Services/Product.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -14,7 +15,7 @@ class Databasehelper {
   Future<Database> get database async {
     if (_db != null) return _db!;
 
-    _db = await _initDB('grocery_list_db_1.db');
+    _db = await _initDB('groceryDB_1.db');
     return _db!;
   }
 
@@ -57,7 +58,29 @@ class Databasehelper {
   ''');
   }
 
-  //Save to DB
+  /* Create functions */
+
+  //Create product
+  Future<int> insertProduct(Product newProduct) async {
+    final db = await database;
+
+    return await db.insert('Product', newProduct.toMap());
+  }
+
+  /* Retrieve functions */
+
+  //Get Products
+  Future<List<Map<String, dynamic>>> getProducts() async {
+    final db = await database;
+
+    return await db.query('Product');
+  }
+}
+
+
+
+
+ /*  //Save to DB
 
   Future<int?> saveCheckList(
     Map<String, dynamic> groceryList,
@@ -141,3 +164,4 @@ class Databasehelper {
     );
   }
 }
+ */
