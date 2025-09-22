@@ -16,6 +16,7 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     final products = context.watch<ProductProvider>().products;
+    final totalProducts = context.watch<ProductProvider>().totalProducts;
 
     return CustomScrollView(
       slivers: [
@@ -53,7 +54,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           ),
                         ),
                         Text(
-                          '100',
+                          totalProducts.toString(),
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.w500,
@@ -86,7 +87,6 @@ class _ProductScreenState extends State<ProductScreen> {
                   SlidableAction(
                     onPressed: (_) => print('Delete'),
                     backgroundColor: Colors.redAccent,
-                    foregroundColor: Colors.white,
                     icon: Icons.delete_forever_rounded,
                     label: 'Delete',
                   ),

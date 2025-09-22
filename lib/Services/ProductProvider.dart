@@ -4,11 +4,13 @@ import 'package:grocery_list/Services/Product.dart';
 
 class ProductProvider extends ChangeNotifier {
   List<Product> _products = [];
+  int _totalProducts = 0;
 
   //Load Data
   Future<void> loadProducts() async {
     final data = await Databasehelper().getProducts();
     _products = data.map((p) => Product.fromMap(p)).toList();
+    _totalProducts = _products.length;
 
     notifyListeners();
   }
@@ -28,4 +30,5 @@ class ProductProvider extends ChangeNotifier {
 
   //Getters
   List<Product> get products => List.unmodifiable(_products);
+  int get totalProducts => _totalProducts;
 }
