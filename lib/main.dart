@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_list/AddCheckList.dart';
-import 'package:grocery_list/Dashboard.dart';
-import 'package:grocery_list/Services/Grocerylistprovider.dart';
+import 'package:grocery_list/Checklist/ChecklistScreen.dart';
+import 'package:grocery_list/Home.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
+  /* runApp(
     ChangeNotifierProvider(
       create: (context) => Grocerylistprovider(),
       child: MaterialApp(
@@ -15,5 +15,7 @@ void main() {
         },
       ),
     ),
-  );
+  ); */
+
+  runApp(MaterialApp(routes: {'/': (context) => Home()}));
 }

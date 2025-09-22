@@ -1,4 +1,4 @@
-import 'package:grocery_list/Services/Groceryitem.dart';
+import 'package:grocery_list/Services/Item.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -27,23 +27,32 @@ class Databasehelper {
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE groceryList (
+      CREATE TABLE checklist (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         budget REAL,
+        total_items INTEGER,
+        bought_items INTEGER,
+        isDone INTEGER,
         created_at TEXT
       )
   ''');
 
     await db.execute('''
-      CREATE TABLE groceryItem (
+      CREATE TABLE Item (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        groceryList_id INTEGER,
-        itemName TEXT,
+        checkList_id INTEGER,
+        product_id INTEGER,
         quantity INTEGER,
-        estimatedPrice REAL,
-        actualPrice REAL,
-        isBought INTEGER,
-        created_at TEXT
+        isBought INTEGER
+      )
+  ''');
+
+    await db.execute('''
+      CREATE TABLE Product (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_name TEXT,
+        price REAL,
+        category TEXT
       )
   ''');
   }
@@ -75,7 +84,7 @@ class Databasehelper {
     });
   }
 
-  Future<int> insertGroceryList(
+  Future<int> insertChecklist(
     Transaction tnx,
     Map<String, dynamic> groceryList,
   ) async {
