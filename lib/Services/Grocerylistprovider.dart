@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_list/Groceryitem.dart';
+import 'package:grocery_list/Services/Groceryitem.dart';
 import 'package:grocery_list/Services/Databasehelper.dart';
-import 'package:grocery_list/checklist.dart';
+import 'package:grocery_list/Services/Checklist.dart';
 
 class Grocerylistprovider extends ChangeNotifier {
   List<Checklist> _checkLists = [];
@@ -36,5 +36,15 @@ class Grocerylistprovider extends ChangeNotifier {
     }
 
     return result!;
+  }
+
+  //Update bought items
+  Future<void> updateBoughtItems(List<Groceryitem> groceryItems) async {
+    List<Map<String, dynamic>> boughtItems = groceryItems
+        .where((i) => i.isBought)
+        .map((i) => i.toMap())
+        .toList();
+
+    await Databasehelper().updateIfBought(boughtItems);
   }
 }

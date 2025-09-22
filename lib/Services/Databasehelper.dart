@@ -1,4 +1,4 @@
-import 'package:grocery_list/Groceryitem.dart';
+import 'package:grocery_list/Services/Groceryitem.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -42,10 +42,13 @@ class Databasehelper {
         quantity INTEGER,
         estimatedPrice REAL,
         actualPrice REAL,
+        isBought INTEGER,
         created_at TEXT
       )
   ''');
   }
+
+  //Save to DB
 
   Future<int?> saveCheckList(
     Map<String, dynamic> groceryList,
@@ -91,6 +94,26 @@ class Databasehelper {
 
     await batch.commit(noResult: true);
   }
+
+  //Update to DB
+
+  Future<void> updateIfBought(List<Map<String, dynamic>> groceryItems) async {
+    final db = await database;
+    var batch = db.batch();
+
+    for (var groceryItem in groceryItems) {
+      batch.update(
+        'groceryItem',
+        groceryItem,
+        where: 'id = ?',
+        whereArgs: groceryItem['id'],
+      );
+    }
+
+    await batch.commit(noResult: false);
+  }
+
+  //Retrieve from DB
 
   Future<List<Map<String, dynamic>>> getGroceryLists() async {
     final db = await database;

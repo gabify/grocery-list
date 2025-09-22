@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_list/Checklist.dart';
-import 'package:grocery_list/Groceryitem.dart';
+import 'package:grocery_list/Services/Checklist.dart';
+import 'package:grocery_list/Services/Groceryitem.dart';
 import 'package:grocery_list/Services/Databasehelper.dart';
 import 'package:grocery_list/Services/Grocerylistprovider.dart';
 

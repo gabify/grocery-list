@@ -29,6 +29,7 @@ class Groceryitem {
       'quantity': quantity,
       'estimatedPrice': estimatedPrice,
       'actualPrice': actualPrice,
+      'isBought': isBought ? 1 : 0,
       'created_at': created_at,
     };
   }
@@ -39,6 +40,9 @@ class Groceryitem {
       name: item['itemName'],
       estimatedPrice: item['estimatedPrice'],
       quantity: item['quantity'],
+      actualPrice: item['actualPrice'],
+      isBought: item['isBought'] == 1 ? true : false,
+      created_at: item['created_at'],
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grocery_list/Grocerylist.dart';
 import 'package:grocery_list/Services/Databasehelper.dart';
 import 'package:grocery_list/Services/Grocerylistprovider.dart';
-import 'package:grocery_list/checklist.dart';
+import 'package:grocery_list/Services/checklist.dart';
 import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
