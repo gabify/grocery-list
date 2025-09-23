@@ -34,4 +34,9 @@ class Item {
       isBought: item['isBought'] == 1 ? true : false,
     );
   }
+
+  //calculate cost based on product price
+  double getCost(double price) {
+    return quantity * price;
+  }
 }

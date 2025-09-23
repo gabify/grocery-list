@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_list/Checklist/VerifyChecklist.dart';
 import 'package:grocery_list/Services/Item.dart';
 import 'package:grocery_list/Services/ProductProvider.dart';
 import 'package:provider/provider.dart';
@@ -13,9 +14,6 @@ class AddChecklist extends StatefulWidget {
 class _AddChecklistState extends State<AddChecklist> {
   final _formKey = GlobalKey<FormState>();
   List<Item> items = [];
-  int totalItems = 0;
-  double budget = 0.0;
-  String createdAt = '';
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +25,11 @@ class _AddChecklistState extends State<AddChecklist> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             TextButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/');
+              },
               label: Text('Cancel', style: TextStyle(color: Colors.grey[50])),
               icon: Icon(Icons.close, color: Colors.grey[50]),
-            ),
-            TextButton.icon(
-              onPressed: () {},
-              label: Text('Save', style: TextStyle(color: Colors.grey[50])),
-              icon: Icon(Icons.check, color: Colors.grey[50]),
             ),
           ],
         ),
@@ -134,7 +129,7 @@ class _AddChecklistState extends State<AddChecklist> {
                                           return '*Only numbers are allowed.';
                                         }
                                       },
-                                      onSaved: (v) => budget = double.parse(v!),
+                                      //onSaved: (v) => budget = double.parse(v!),
                                     ),
                                   ),
 
@@ -169,12 +164,52 @@ class _AddChecklistState extends State<AddChecklist> {
                 title: Text(product.productName),
                 subtitle: Text("${product.price}.00 Php"),
                 trailing: dynamicTrailing,
-                onTap: () =>
-                    setState(() => product.isSelected = !product.isSelected),
+                onTap: () {
+                  setState(() {
+                    final selected = items.any(
+                      (i) => i.productId == product.id,
+                    );
+
+                    if (selected) {
+                      items.removeWhere((i) => i.productId == product.id);
+                      product.isSelected = false;
+                    } else {
+                      items.add(Item(productId: product.id, quantity: 1));
+                      product.isSelected = true;
+                    }
+                  });
+                },
               );
             }, childCount: products.length),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => VerifyChecklist(items: items)),
+          );
+        },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(Icons.shopping_cart, size: 35),
+            if (items.isNotEmpty)
+              Positioned(
+                bottom: 15,
+                left: 15,
+                child: CircleAvatar(
+                  radius: 10,
+                  backgroundColor: Colors.pink[400],
+                  child: Text(
+                    "${items.length}",
+                    style: TextStyle(fontSize: 15, color: Colors.grey[50]),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
