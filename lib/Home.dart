@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grocery_list/Checklist/ChecklistScreen.dart';
 import 'package:grocery_list/Product/ProductScreen.dart';
+import 'package:grocery_list/Services/ChecklistProvider.dart';
 import 'package:grocery_list/Services/ProductProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,7 @@ class _HomeState extends State<Home> {
 
   Future<void> initData() async {
     await context.read<ProductProvider>().loadProducts();
+    await context.read<ChecklistProvider>().loadChecklists();
   }
 
   final List<Widget> _screens = [ChecklistScreen(), ProductScreen()];
@@ -36,7 +38,7 @@ class _HomeState extends State<Home> {
       body: _screens.elementAt(_selectedScreen),
       bottomNavigationBar: BottomAppBar(
         shape: CircularNotchedRectangle(),
-        notchMargin: 18,
+        notchMargin: 4,
         height: 70,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -58,7 +60,7 @@ class _HomeState extends State<Home> {
         onPressed: () {
           switch (_selectedScreen) {
             case 0:
-              Navigator.pushReplacementNamed(context, '/addChecklist');
+              Navigator.pushNamed(context, '/addChecklist');
               break;
             case 1:
               Navigator.pushNamed(context, '/addProduct');
@@ -68,9 +70,11 @@ class _HomeState extends State<Home> {
           }
         },
         shape: CircleBorder(),
+        elevation: 0,
         child: Icon(Icons.add),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterDocked,
     );
   }
 }

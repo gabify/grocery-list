@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:grocery_list/Services/Checklist.dart';
+import 'package:grocery_list/Services/ChecklistProvider.dart';
+import 'package:provider/provider.dart';
 
 class ChecklistScreen extends StatefulWidget {
   const ChecklistScreen({super.key});
@@ -10,26 +12,10 @@ class ChecklistScreen extends StatefulWidget {
 }
 
 class _ChecklistScreenState extends State<ChecklistScreen> {
-  List<Checklist> checklists = [
-    Checklist(
-      budget: 2000,
-      totalItems: 10,
-      boughtItems: 0,
-      isDone: false,
-      created_at: 'created_at',
-    ),
-
-    Checklist(
-      budget: 2000,
-      totalItems: 10,
-      boughtItems: 0,
-      isDone: false,
-      created_at: 'created_at',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final checklists = context.watch<ChecklistProvider>().checklists;
+
     return CustomScrollView(
       slivers: [
         SliverAppBar(

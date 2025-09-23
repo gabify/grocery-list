@@ -1,3 +1,4 @@
+import 'package:grocery_list/Services/Checklist.dart';
 import 'package:grocery_list/Services/Item.dart';
 import 'package:grocery_list/Services/Product.dart';
 import 'package:path/path.dart';
@@ -67,6 +68,49 @@ class Databasehelper {
     return await db.insert('Product', newProduct.toMap());
   }
 
+  //Create Checklist
+  Future<int> _insertChecklist(Transaction tnx, Checklist newChecklist) async {
+    return await tnx.insert('checklist', newChecklist.toMap());
+  }
+
+  //Create Item
+  Future<void> _insertItems(
+    Transaction tnx,
+    List<Item> items,
+    int checklistId,
+  ) async {
+    var batch = tnx.batch();
+
+    final joinedItems = items.map((i) {
+      i.checklistId = checklistId;
+      return i.toMap();
+    });
+
+    for (var item in joinedItems) {
+      await tnx.insert('Item', item);
+    }
+
+    await batch.commit(noResult: true);
+  }
+
+  //Transaction for creating item and creating checklist
+  Future<int?> insertGroceryList(
+    Checklist newChecklist,
+    List<Item> items,
+  ) async {
+    final db = await database;
+
+    return await db.transaction((tnx) async {
+      try {
+        int checklistId = await _insertChecklist(tnx, newChecklist);
+        await _insertItems(tnx, items, checklistId);
+
+        return checklistId;
+      } catch (e) {
+        return null;
+      }
+    });
+  }
   /* Retrieve functions */
 
   //Get Products
@@ -74,6 +118,13 @@ class Databasehelper {
     final db = await database;
 
     return await db.query('Product');
+  }
+
+  //Get Checklists
+  Future<List<Map<String, dynamic>>> getChecklists() async {
+    final db = await database;
+
+    return await db.query('checklist');
   }
 }
 
