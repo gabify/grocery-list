@@ -3,12 +3,14 @@ class Product {
   String productName;
   double price;
   String category;
+  bool isSelected;
 
   Product({
     this.id,
     required this.productName,
     required this.price,
     required this.category,
+    this.isSelected = false,
   });
 
   factory Product.fromMap(Map<String, dynamic> product) {
