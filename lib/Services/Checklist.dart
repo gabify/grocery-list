@@ -21,7 +21,7 @@ class Checklist {
       budget: checklist['budget'],
       totalItems: checklist['total_items'],
       boughtItems: checklist['bought_items'],
-      isDone: checklist['isDone'],
+      isDone: checklist['isDone'] == 1 ? true : false,
       created_at: checklist['created_at'],
     );
   }
@@ -31,7 +31,7 @@ class Checklist {
       'budget': budget,
       'total_items': totalItems,
       'bought_items': boughtItems,
-      'isDone': isDone,
+      'isDone': isDone ? 1 : 0,
       'created_at': created_at,
     };
   }

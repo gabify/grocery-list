@@ -15,16 +15,12 @@ class ChecklistProvider extends ChangeNotifier {
   }
 
   //Add data
-  Future<String> addChecklist(Checklist newChecklist, List<Item> items) async {
+  Future<int?> addChecklist(List<Item> items, Checklist newChecklist) async {
     int? id = await Databasehelper().insertGroceryList(newChecklist, items);
     loadChecklists();
     notifyListeners();
 
-    if (id == null) {
-      return 'failed';
-    }
-
-    return 'Successs';
+    return id;
   }
 
   //Getters

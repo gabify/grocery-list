@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_list/Services/Checklist.dart';
+import 'package:grocery_list/Services/ChecklistProvider.dart';
 import 'package:grocery_list/Services/Item.dart';
 import 'package:grocery_list/Services/Product.dart';
 import 'package:grocery_list/Services/ProductProvider.dart';
@@ -6,41 +8,30 @@ import 'package:provider/provider.dart';
 
 class VerifyChecklist extends StatefulWidget {
   final List<Item> items;
+  final double budget;
 
-  const VerifyChecklist({super.key, required this.items});
+  const VerifyChecklist({super.key, required this.items, required this.budget});
 
   @override
   State<VerifyChecklist> createState() => _VerifyChecklistState();
 }
 
 class _VerifyChecklistState extends State<VerifyChecklist> {
-  final TextEditingController _budgetController = TextEditingController();
-  double budget = 0.0;
   double totalCost = 0.0;
   String createdAt = '';
+  List<Product> products = [];
 
   double _calculateTotalCost(List<Item> items, List<Product> products) {
     return items.fold(0.0, (sum, item) {
       final product = products.firstWhere((p) => p.id == item.productId);
       return sum + item.getCost(product.price);
     });
-
-    //Dont know how to calculate the initial value of total cost T_T
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    _budgetController.addListener(() {
-      setState(() => budget = double.parse(_budgetController.text));
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final products = context.watch<ProductProvider>().products;
+    products = context.watch<ProductProvider>().products;
+    totalCost = _calculateTotalCost(widget.items, products);
 
     return Scaffold(
       appBar: AppBar(
@@ -85,28 +76,6 @@ class _VerifyChecklistState extends State<VerifyChecklist> {
                         ),
 
                         SizedBox(height: 40),
-
-                        TextFormField(
-                          controller: _budgetController,
-                          keyboardType: TextInputType.numberWithOptions(),
-                          decoration: InputDecoration(
-                            labelText: 'Set your budget here!',
-                            filled: true,
-                            fillColor: Colors.grey[50],
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.pinkAccent,
-                                width: 1.4,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -172,6 +141,13 @@ class _VerifyChecklistState extends State<VerifyChecklist> {
                 children: [
                   Row(
                     children: [
+                      Text('Budget: '),
+                      Text("${widget.budget.toStringAsFixed(2)} Php"),
+                    ],
+                  ),
+
+                  Row(
+                    children: [
                       Text('Total Cost: '),
                       Text("${totalCost.toStringAsFixed(2)} Php"),
                     ],
@@ -180,7 +156,9 @@ class _VerifyChecklistState extends State<VerifyChecklist> {
                   Row(
                     children: [
                       Text('Remaining Budget: '),
-                      Text("${(budget - totalCost).toStringAsFixed(2)} Php"),
+                      Text(
+                        "${(widget.budget - totalCost).toStringAsFixed(2)} Php",
+                      ),
                     ],
                   ),
                 ],
@@ -194,7 +172,34 @@ class _VerifyChecklistState extends State<VerifyChecklist> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final result = context
+                          .read<ChecklistProvider>()
+                          .addChecklist(
+                            widget.items,
+                            Checklist(
+                              budget: widget.budget,
+                              totalItems: widget.items.length,
+                              boughtItems: 0,
+                              isDone: false,
+                              created_at: 'September 27, 2025',
+                            ),
+                          );
+
+                      if (!mounted) return;
+
+                      if (result != null) {
+                        Navigator.popAndPushNamed(context, '/');
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'An error occured during opration. Please try again later',
+                            ),
+                          ),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.pink[400],
                       foregroundColor: Colors.grey[50],
