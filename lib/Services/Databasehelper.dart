@@ -136,6 +136,18 @@ class Databasehelper {
       whereArgs: [checklistId],
     );
   }
+
+  /* Update Functions */
+  Future<void> updateIsBought(List<Map<String, dynamic>> boughtItems) async {
+    final db = await database;
+    var batch = db.batch();
+
+    for (var item in boughtItems) {
+      batch.update('Item', item, where: 'id = ?', whereArgs: [item['id']]);
+    }
+
+    await batch.commit(noResult: false);
+  }
 }
 
 
