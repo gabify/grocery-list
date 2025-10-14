@@ -124,7 +124,17 @@ class Databasehelper {
   Future<List<Map<String, dynamic>>> getChecklists() async {
     final db = await database;
 
-    return await db.query('checklist'); // Need to sort to descending order
+    return await db.query('checklist', orderBy: 'id DESC');
+  }
+
+  Future<List<Map<String, dynamic>>> getItems(int checklistId) async {
+    final db = await database;
+
+    return await db.query(
+      'Item',
+      where: 'checkList_id = ?',
+      whereArgs: [checklistId],
+    );
   }
 }
 

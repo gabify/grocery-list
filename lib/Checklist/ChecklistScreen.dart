@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:grocery_list/Checklist/ViewItems.dart';
 import 'package:grocery_list/Services/Checklist.dart';
 import 'package:grocery_list/Services/ChecklistProvider.dart';
+import 'package:grocery_list/Services/ItemProvider.dart';
 import 'package:provider/provider.dart';
 
 class ChecklistScreen extends StatefulWidget {
@@ -12,6 +14,10 @@ class ChecklistScreen extends StatefulWidget {
 }
 
 class _ChecklistScreenState extends State<ChecklistScreen> {
+  Future<void> initData(int checklistId) async {
+    await context.read<ItemProvider>().loadItems(checklistId);
+  }
+
   @override
   Widget build(BuildContext context) {
     final checklists = context.watch<ChecklistProvider>().checklists;
@@ -58,6 +64,10 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
               child: ListTile(
                 title: Text(checklist.budget.toString()),
                 subtitle: Text(checklist.created_at),
+                onTap: () {
+                  context.read<ItemProvider>().loadItems(checklist.id!);
+                  Navigator.pushNamed(context, '/items');
+                },
               ),
             );
           }, childCount: checklists.length),
