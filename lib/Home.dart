@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
         onPressed: () {
           switch (_selectedScreen) {
             case 0:
-              Navigator.pushReplacementNamed(context, '/addChecklist');
+              Navigator.pushNamed(context, '/addChecklist');
               break;
             case 1:
               Navigator.pushNamed(context, '/addProduct');
