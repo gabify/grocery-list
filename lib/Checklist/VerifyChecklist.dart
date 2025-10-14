@@ -182,7 +182,7 @@ class _VerifyChecklistState extends State<VerifyChecklist> {
                               totalItems: widget.items.length,
                               boughtItems: 0,
                               isDone: false,
-                              created_at: 'September 27, 2025',
+                              created_at: DateTime.now().toIso8601String(),
                             ),
                           );
 
